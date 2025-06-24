@@ -1,0 +1,42 @@
+<!-- Header -->
+<header class="dashboard-header">
+  <button class="user-button" (click)="showQRPopup()">👤</button>
+  <div class="dashboard-title">Control Hub</div>
+  <button class="logout-button" (click)="logout()" title="Logout">🔓</button>
+</header>
+
+<!-- QR Code Popup -->
+<div *ngIf="showQR" class="qr-popup">
+  <div class="qr-popup-content">
+    <h3>User QR</h3>
+    <img
+      [src]="'https://quickchart.io/qr?text=' + encodedName + '&size=150'"
+      alt="QR Code"
+    />
+    <button class="close-btn" (click)="closeQRPopup()">Close</button>
+  </div>
+</div>
+
+<!-- Layout -->
+<div style="display: flex; min-height: 100vh;">
+  <!-- Sidebar -->
+  <aside style="width: 180px; background-color: #f1f1f1; padding: 20px;">
+    <h4>📂Menu</h4>
+    <ul style="list-style: none; padding: 0;">
+      <li><a routerLink="/dashboard">📊 Dashboard</a></li>
+      <li><a routerLink="/dashboard/analytics">📈 Analytics</a></li>
+      <li><a routerLink="/dashboard/rate-us">🔔 Rate Us</a></li>
+      <li><a routerLink="/dashboard/collection">📁 Collection</a></li>
+      <li><a routerLink="/dashboard/users">👤 Users</a></li>
+      <li><a routerLink="/dashboard/admin">🛡️ Admin View</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main content -->
+  <main style="flex-grow: 1; padding: 20px;">
+    <router-outlet></router-outlet>
+  </main>
+</div>
+
+<!-- Footer -->
+<app-footer></app-footer>

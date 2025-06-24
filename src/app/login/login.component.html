@@ -1,0 +1,38 @@
+<form (ngSubmit)="login()" style="max-width: 300px; margin: auto;">
+  <h6 style="text-align: center;">🔒 Welcome to login page</h6>
+
+  <div style="position: relative; margin-bottom: 15px;">
+    <label>Username:</label>
+    <input
+      type="text"
+      [(ngModel)]="username"
+      name="username"
+      required
+      style="padding-left: 30px; width: 100%;"
+    />
+    <i class="fa fa-user" style="position: absolute; left: 8px; top: 35px; color: gray;"></i>
+  </div>
+
+  <div style="position: relative; margin-bottom: 15px;">
+    <label>Password:</label>
+    <input
+      [type]="showPassword ? 'text' : 'password'"
+      [(ngModel)]="password"
+      name="password"
+      required
+      style="padding-left: 30px; padding-right: 30px; width: 100%;"
+    />
+    <i class="fa fa-lock" style="position: absolute; left: 8px; top: 35px; color: gray;"></i>
+    <i
+      class="fa"
+      [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+      (click)="togglePassword()"
+      style="position: absolute; right: 8px; top: 35px; color: gray; cursor: pointer;"
+    ></i>
+  </div>
+
+  <button type="submit" style="width: 100%;">
+    <i class="fas fa-sign-in-alt" style="margin-right: 5px;"></i> Login
+  </button>
+  
+</form>

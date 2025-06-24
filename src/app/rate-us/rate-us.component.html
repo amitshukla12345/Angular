@@ -1,0 +1,22 @@
+<div class="rating-container">
+  <h2 class="center-text">🔔 Rate Us</h2>
+
+  <div class="stars">
+    <ng-container *ngFor="let star of [1,2,3,4,5]">
+      <span
+        (click)="setRating(star)"
+        (mouseover)="setHover(star)"
+        (mouseleave)="clearHover()"
+        [class.filled]="star <= (hovered || rating)"
+      >&#9733;</span>
+    </ng-container>
+  </div>
+
+  <p *ngIf="rating > 0" class="rating-message">
+    You rated us {{ rating }} star(s). Thank you!
+  </p>
+
+  <div *ngIf="rating > 0" class="emoji">
+    {{ getEmoji(rating) }}
+  </div>
+</div>
