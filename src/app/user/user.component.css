@@ -1,4 +1,3 @@
-
 /* css of add user popup*/
 .modal {
   position: fixed;
@@ -89,7 +88,52 @@
   background-color: #c82333;
 }
 
+/*css of refresh button*/
 
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.btn-refresh {
+  background-color: #4caf50; /* green */
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-refresh:hover {
+  background-color: #45a049;
+}
+
+
+/*rating css*/
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0,0,0,0.4);
+  z-index: 1000;
+}
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  min-width: 300px;
+}
+.modal-buttons {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
 
 
 

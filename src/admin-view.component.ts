@@ -9,12 +9,20 @@ import { CommonModule } from '@angular/common';
     <h2 class="center-text">📊 User Ratings (Admin View)</h2>
 
     <div *ngIf="hasRatings(); else noRatings" class="ratings-grid">
+      <div class="grid-header">🆔 ID</div>
       <div class="grid-header">👤 Name</div>
-      <div class="grid-header">🔔 Rating</div>
+      <div class="grid-header">📧 Email</div>
+      <div class="grid-header">⭐ Rating</div>
 
-      <ng-container *ngFor="let key of objectKeys(userRatings)">
-        <div class="grid-cell">{{ key }}</div>
-        <div class="grid-cell">{{ userRatings[key] }} {{ getEmoji(userRatings[key]) }}</div>
+      <ng-container *ngFor="let id of objectKeys(userRatings)">
+        <div class="grid-cell">{{ id }}</div>
+        <div class="grid-cell">{{ userRatings[id]?.name || 'N/A' }}</div>
+        <div class="grid-cell">{{ userRatings[id]?.email || 'N/A' }}</div>
+        <div class="grid-cell">
+          {{ userRatings[id]?.rating }}
+         {{ getEmoji(userRatings[id]?.rating || 0) }}
+
+        </div>
       </ng-container>
     </div>
 
@@ -30,19 +38,20 @@ import { CommonModule } from '@angular/common';
 
     .ratings-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 2fr 1fr;
       gap: 10px;
       margin: 0 auto;
-      max-width: 600px;
+      max-width: 800px;
     }
 
     .grid-header {
       font-weight: bold;
-      background-color:rgb(24, 130, 252);
+      background-color: rgb(24, 130, 252);
       padding: 10px;
       text-align: center;
       border: 1px solid #ccc;
       border-radius: 5px;
+      color: white;
     }
 
     .grid-cell {
@@ -54,7 +63,7 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class AdminViewComponent implements OnInit {
-  userRatings: Record<string, number> = {};
+  userRatings: Record<string, { name: string; email: string; rating: number }> = {};
 
   ngOnInit(): void {
     const data = localStorage.getItem('ratings');

@@ -1,35 +1,37 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoginService } from '../login.service'; // Adjust path if needed
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { UserService } from '../user/user.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  username: string = '';
+  email: string = '';
   password: string = '';
   showPassword: boolean = false;
 
-  constructor(private router: Router, private loginService: LoginService) {}
+  constructor(private router: Router, private userService: UserService) {}
 
   login() {
-    this.loginService.login(this.username, this.password).subscribe({
-      next: (res) => {
+    this.userService.login(this.email, this.password).subscribe({
+      next: (res: any) => {
         alert(res.message);
         if (res.message.includes('successful')) {
-          sessionStorage.setItem('username', this.username);
-          this.router.navigate(['/dashboard']); //  route to dashboard
+          sessionStorage.setItem('email', this.email);
+          this.router.navigate(['/dashboard']);
         }
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         console.error('Login error:', err);
-        alert('Login failed ');
+        alert('Login failed');
       }
     });
   }

@@ -1,39 +1,44 @@
+<!-- Toolbar -->
 <div class="button-group">
   <button class="btn-back" (click)="goBack()">⬅ Back</button>
   <button class="btn-add" (click)="showModal = true">Add User</button>
   <button class="btn-delete" (click)="deleteSelected()">Delete Selected</button>
+  <button class="btn-refresh" (click)="refreshUsers()">Refresh</button>
 </div>
 
-
+<!-- Grid -->
 <ag-grid-angular
   class="ag-theme-alpine custom-ag-grid"
-  style="width:100%; height:500px; margin-top:20px;"
+  style="width: 100%; height: 500px; margin-top: 20px;"
   [rowData]="rowData"
   [columnDefs]="columnDefs"
   [defaultColDef]="defaultColDef"
+  [context]="context"
   rowSelection="multiple"
-  (gridReady)="onGridReady($event)"
-></ag-grid-angular>
+  (gridReady)="onGridReady($event)">
+</ag-grid-angular>
 
-
-
+<!-- Add User Modal -->
 <div *ngIf="showModal" class="modal">
   <div class="modal-content">
     <h3>Add New User</h3>
     <form (ngSubmit)="submitUser()">
       <label>Name:</label>
       <input [(ngModel)]="newUser.name" name="name" required /><br><br>
+
       <label>Email:</label>
       <input [(ngModel)]="newUser.email" name="email" required /><br><br>
+
       <label>Role:</label>
       <select [(ngModel)]="newUser.role" name="role">
         <option>Admin</option>
         <option>Editor</option>
         <option>Viewer</option>
       </select><br><br>
+
       <div class="modal-buttons">
         <button type="submit">Add</button>
-        <button type="button" (click)="showModal=false">Cancel</button>
+        <button type="button" (click)="showModal = false">Cancel</button>
       </div>
     </form>
   </div>

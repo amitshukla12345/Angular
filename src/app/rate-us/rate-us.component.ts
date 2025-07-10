@@ -11,16 +11,17 @@ import { CommonModule } from '@angular/common';
 export class RateUsComponent implements OnInit {
   rating = 0;
   hovered = 0;
-  username = '';
+  user: any = null;
 
   ngOnInit(): void {
-    // Get current user from sessionStorage
-    this.username = sessionStorage.getItem('username') || 'Guest';
+    const nav = history.state?.user;
+    if (nav) {
+      this.user = nav;
 
-    // Load user's existing rating if present
-    const allRatings = JSON.parse(localStorage.getItem('ratings') || '{}');
-    if (allRatings[this.username]) {
-      this.rating = allRatings[this.username];
+      const allRatings = JSON.parse(localStorage.getItem('ratings') || '{}');
+      if (allRatings[this.user.id]) {
+        this.rating = allRatings[this.user.id]?.rating || 0;
+      }
     }
   }
 
@@ -28,10 +29,15 @@ export class RateUsComponent implements OnInit {
     this.rating = value;
 
     const allRatings = JSON.parse(localStorage.getItem('ratings') || '{}');
-    allRatings[this.username] = value;
+    allRatings[this.user.id] = {
+      name: this.user.name,
+      email: this.user.email,
+      role: this.user.role,
+      rating: value
+    };
     localStorage.setItem('ratings', JSON.stringify(allRatings));
 
-    console.log(`${this.username} rated: ${value}`);
+    console.log(`${this.user.name} rated: ${value}`);
   }
 
   setHover(value: number) {
@@ -43,11 +49,17 @@ export class RateUsComponent implements OnInit {
   }
 
   getEmoji(rating: number): string {
-    if (rating === 1) return '😡';
-    if (rating === 2) return '😕';
-    if (rating === 3) return '🙂';
-    if (rating === 4) return '😊';
-    if (rating === 5) return '🤩';
-    return '';
+    switch (rating) {
+      case 1: return '😡';
+      case 2: return '😕';
+      case 3: return '🙂';
+      case 4: return '😊';
+      case 5: return '🤩';
+      default: return '';
+    }
+  }
+
+  goBack() {
+    history.back();
   }
 }

@@ -2,15 +2,15 @@
   <h6 style="text-align: center;">🔒 Welcome to login page</h6>
 
   <div style="position: relative; margin-bottom: 15px;">
-    <label>Username:</label>
+    <label>Email:</label>
     <input
-      type="text"
-      [(ngModel)]="username"
-      name="username"
+      type="email"
+      [(ngModel)]="email"
+      name="email"
       required
       style="padding-left: 30px; width: 100%;"
     />
-    <i class="fa fa-user" style="position: absolute; left: 8px; top: 35px; color: gray;"></i>
+    <i class="fa fa-envelope" style="position: absolute; left: 8px; top: 35px; color: gray;"></i>
   </div>
 
   <div style="position: relative; margin-bottom: 15px;">
@@ -34,5 +34,11 @@
   <button type="submit" style="width: 100%;">
     <i class="fas fa-sign-in-alt" style="margin-right: 5px;"></i> Login
   </button>
-  
+
+  <div style="text-align: center; margin-top: 10px;">
+    <p style="margin: 0;">Don't have an account?</p>
+    <a routerLink="/register" style="color: #007bff; text-decoration: none;">
+      Register Here
+    </a>
+  </div>
 </form>

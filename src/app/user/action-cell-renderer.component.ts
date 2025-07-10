@@ -1,27 +1,39 @@
+// src/app/user/action-cell-renderer.component.ts
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faEdit, faSave, faStar } from '@fortawesome/free-solid-svg-icons';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
 
 @Component({
   selector: 'app-action-cell-renderer',
+  standalone: true,
+  imports: [CommonModule, FontAwesomeModule],
   template: `
-    <span class="action-icons">
-      <i class="fa fa-user-edit" title="Edit Name" (click)="edit('name')"></i>
-      <i class="fa fa-envelope" title="Edit Email" (click)="edit('email')"></i>
-      <i class="fa fa-user-tag" title="Edit Role" (click)="edit('role')"></i>
-    </span>
+    <button (click)="editRow()" title="Edit">
+      <fa-icon [icon]="faEdit"></fa-icon>
+    </button>
+    <button (click)="saveRow()" title="Save">
+      <fa-icon [icon]="faSave"></fa-icon>
+    </button>
+    <button (click)="openRating()" title="Rate User">
+      <fa-icon [icon]="faStar" style="color:gold;"></fa-icon>
+    </button>
   `,
   styles: [`
-    .action-icons i {
+    button {
+      margin: 0 4px;
+      border: none;
+      background: none;
       cursor: pointer;
-      margin: 0 6px;
-      color: #555;
-    }
-    .action-icons i:hover {
-      color: #000;
     }
   `]
 })
 export class ActionCellRendererComponent implements ICellRendererAngularComp {
+  faEdit = faEdit;
+  faSave = faSave;
+  faStar = faStar;
+
   params: any;
 
   agInit(params: any): void {
@@ -32,12 +44,15 @@ export class ActionCellRendererComponent implements ICellRendererAngularComp {
     return false;
   }
 
-  edit(field: string): void {
-    if (this.params?.api?.startEditingCell) {
-      this.params.api.startEditingCell({
-        rowIndex: this.params.node.rowIndex,
-        colKey: field
-      });
-    }
+  editRow(): void {
+    this.params.context.componentParent.startRowEdit(this.params.rowIndex);
+  }
+
+  saveRow(): void {
+    this.params.context.componentParent.onRowSave(this.params.data);
+  }
+
+  openRating(): void {
+    this.params.context.componentParent.openRateUsModal(this.params.data);
   }
 }

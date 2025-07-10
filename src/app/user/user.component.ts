@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AgGridAngular } from 'ag-grid-angular';
@@ -10,10 +10,13 @@ import {
   RowSelectionOptions
 } from 'ag-grid-community';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faSave, faStar } from '@fortawesome/free-solid-svg-icons';
 
 import { ActionCellRendererComponent } from './action-cell-renderer.component';
 import { RouterLinkRendererComponent } from '../router-link-renderer/router-link-renderer.component';
+import { UserService } from './user.service';
+import { User } from './user.model';
+import { Router } from '@angular/router';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -31,21 +34,19 @@ ModuleRegistry.registerModules([AllCommunityModule]);
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.css']
 })
-export class UserComponent {
-  constructor(library: FaIconLibrary, private location: Location) {
-    library.addIcons(faEdit, faSave);
+export class UserComponent implements OnInit {
+  constructor(
+    library: FaIconLibrary,
+    private location: Location,
+    private userService: UserService,
+    private router: Router
+  ) {
+    library.addIcons(faEdit, faSave, faStar);
   }
 
   showModal = false;
-  newUser = { name: '', email: '', role: 'Viewer' };
-
-  users = [
-    { name: 'Amit', email: 'amit@example.com', role: 'Admin' },
-    { name: 'Riya', email: 'riya@example.com', role: 'Editor' },
-    { name: 'Rahul', email: 'rahul@example.com', role: 'Viewer' }
-  ];
-
-  rowData = [...this.users];
+  newUser: User = { name: '', email: '', role: 'Viewer' };
+  rowData: User[] = [];
 
   rowSelection: RowSelectionOptions = {
     mode: 'multiRow',
@@ -90,7 +91,7 @@ export class UserComponent {
       headerName: 'Actions',
       field: 'actions',
       cellRenderer: ActionCellRendererComponent,
-      width: 140,
+      width: 160,
       editable: false,
       filter: false,
       sortable: false
@@ -102,6 +103,22 @@ export class UserComponent {
   suppressClickEdit = true;
   context = { componentParent: this };
 
+  ngOnInit(): void {
+    this.fetchUsers();
+  }
+
+  fetchUsers(): void {
+    this.userService.getAllUser().subscribe({
+      next: (data: User[]) => {
+        this.rowData = data;
+      },
+      error: (err: any) => {
+        console.error('Error fetching users', err);
+        alert('Failed to fetch users from server');
+      }
+    });
+  }
+
   onGridReady(params: GridReadyEvent): void {
     this.gridApi = params.api;
     this.gridApi.sizeColumnsToFit();
@@ -109,23 +126,62 @@ export class UserComponent {
 
   submitUser(): void {
     const user = { ...this.newUser };
-    this.gridApi.applyTransaction({ add: [user] });
-    this.users.push(user);
-    this.newUser = { name: '', email: '', role: 'Viewer' };
-    this.showModal = false;
+    this.userService.addUser(user).subscribe({
+      next: (createdUser) => {
+        this.gridApi.applyTransaction({ add: [createdUser] });
+        this.rowData.push(createdUser);
+        this.newUser = { name: '', email: '', role: 'Viewer' };
+        this.showModal = false;
+        alert('User added to backend');
+      },
+      error: (err) => {
+        console.error('Error adding user:', err);
+        alert('Failed to add user to server');
+      }
+    });
+  }
+
+  onRowDelete(data: User): void {
+    if (!data || !data.id) {
+      alert('User ID not found.');
+      return;
+    }
+
+    if (confirm(`Are you sure you want to delete ${data.name}?`)) {
+      this.userService.deleteUser(data.id).subscribe({
+        next: () => {
+          this.gridApi.applyTransaction({ remove: [data] });
+          this.rowData = this.rowData.filter(u => u.id !== data.id);
+          alert(`User ${data.name} deleted.`);
+        },
+        error: (err) => {
+          console.error('Error deleting user:', err);
+          alert('Failed to delete user.');
+        }
+      });
+    }
+  }
+
+  onRowSave(data: User): void {
+    if (!data.id) {
+      alert('Cannot update user without ID.');
+      return;
+    }
+
+    this.userService.updateUser(data.id, data).subscribe({
+      next: (updatedUser) => {
+        this.gridApi.applyTransaction({ update: [updatedUser] });
+        alert(`User ${updatedUser.name} updated.`);
+      },
+      error: (err) => {
+        console.error('Error updating user:', err);
+        alert('Failed to update user.');
+      }
+    });
   }
 
   startRowEdit(rowIndex: number): void {
     this.gridApi.startEditingCell({ rowIndex, colKey: 'name' });
-  }
-
-  onRowSave(data: any): void {
-    this.gridApi.applyTransaction({ update: [data] });
-  }
-
-  onRowDelete(data: any): void {
-    this.gridApi.applyTransaction({ remove: [data] });
-    this.users = this.users.filter(u => u !== data);
   }
 
   anySelected(): boolean {
@@ -133,14 +189,38 @@ export class UserComponent {
   }
 
   deleteSelected(): void {
-    const selected = this.gridApi.getSelectedRows();
+    const selected: User[] = this.gridApi.getSelectedRows();
     if (selected.length && confirm(`Delete ${selected.length} user(s)?`)) {
-      this.gridApi.applyTransaction({ remove: selected });
-      this.users = this.users.filter(u => !selected.includes(u));
+      selected.forEach((user: User) => {
+        if (user.id !== undefined) {
+          this.userService.deleteUser(user.id).subscribe({
+            next: () => {
+              this.gridApi.applyTransaction({ remove: [user] });
+              this.rowData = this.rowData.filter(u => u.id !== user.id);
+            },
+            error: () => alert(`Failed to delete user ${user.name}`)
+          });
+        } else {
+          alert(`Cannot delete user ${user.name}, missing ID`);
+        }
+      });
     }
+  }
+
+  refreshUsers(): void {
+    this.fetchUsers();
+    alert('User list refreshed.');
   }
 
   goBack(): void {
     this.location.back();
   }
+
+  openRateUsModal(user: User): void {
+  this.router.navigate(['/dashboard/rate-us'], {
+    state: { user: { id: user.id, name: user.name, email: user.email, role: user.role } }
+  });
+}
+
+
 }

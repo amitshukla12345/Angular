@@ -1,17 +1,40 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { RouterOutlet } from '@angular/router';
-import { ProfileComponent } from './profile/profile.component';
-import { RateUsComponent } from './rate-us/rate-us.component';
+import { LoginService } from './login.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    RouterOutlet,         // Enables routing
-    ProfileComponent,     // If you're using <app-profile>
-    RateUsComponent       // Enables <app-rate-us>
-  ],
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {}
+export class AppComponent implements OnInit {
+
+  constructor(
+    private loginService: LoginService,
+    private router: Router
+  ) {}
+
+  ngOnInit() {
+    const storedUser = sessionStorage.getItem('username');
+
+    if (!storedUser) {
+      this.loginService.login('admin', 'admin').subscribe({
+        next: (res) => {
+          console.log('✅ Login response:', res.message);
+          if (res.message.includes('Login successful')) {
+            sessionStorage.setItem('username', 'admin');
+            this.router.navigate(['/dashboard']);
+          }
+        },
+        error: (err) => {
+          console.error('Login failed:', err);
+        }
+      });
+    } else {
+      console.log('🔄 Already logged in as:', storedUser);
+    }
+  }
+}
