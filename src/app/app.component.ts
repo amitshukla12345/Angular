@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { RouterOutlet } from '@angular/router';
-import { LoginService } from './login.service';
+import { Router, RouterOutlet } from '@angular/router';
+import { SwUpdate } from '@angular/service-worker';
 
 @Component({
   selector: 'app-root',
@@ -13,28 +12,30 @@ import { LoginService } from './login.service';
 export class AppComponent implements OnInit {
 
   constructor(
-    private loginService: LoginService,
-    private router: Router
+    private router: Router,
+    private swUpdate: SwUpdate
   ) {}
 
   ngOnInit() {
-    const storedUser = sessionStorage.getItem('username');
+    //  If email is stored, navigate to dashboard (already logged in)
+    const storedEmail = sessionStorage.getItem('email');
+    if (storedEmail) {
+      console.log('🔄 Already logged in as:', storedEmail);
+      this.router.navigate(['/dashboard']);
+    } else {
+      //  Don’t login automatically; show login form on UI
+      this.router.navigate(['/login']);
+    }
 
-    if (!storedUser) {
-      this.loginService.login('admin', 'admin').subscribe({
-        next: (res) => {
-          console.log('✅ Login response:', res.message);
-          if (res.message.includes('Login successful')) {
-            sessionStorage.setItem('username', 'admin');
-            this.router.navigate(['/dashboard']);
+    //  PWA Update Check
+    if (this.swUpdate.isEnabled) {
+      this.swUpdate.versionUpdates.subscribe(event => {
+        if (event.type === 'VERSION_READY') {
+          if (confirm('🔄 A new version of the app is available. Load it now?')) {
+            window.location.reload();
           }
-        },
-        error: (err) => {
-          console.error('Login failed:', err);
         }
       });
-    } else {
-      console.log('🔄 Already logged in as:', storedUser);
     }
   }
 }

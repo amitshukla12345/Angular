@@ -82,3 +82,33 @@
 .center-link a:hover {
   text-decoration: underline;
 }
+
+
+/* name password email icon css*/
+
+form .form-group {
+  margin-bottom: 1rem;
+}
+
+form label i {
+  margin-right: 5px;
+  color: #007bff;
+}
+
+input, select {
+  padding: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  cursor: pointer;
+}
+
+button i {
+  margin-right: 5px;
+}

@@ -1,23 +1,23 @@
 <h2 class="form-heading">📝 User Registration</h2>
 
 <form (ngSubmit)="register()" class="register-form">
-  <div>
-    <label>Name:</label>
+  <div class="form-group">
+    <label><i class="fa fa-user"></i> Name:</label>
     <input [(ngModel)]="user.name" name="name" required />
   </div>
 
-  <div>
-    <label>Email:</label>
+  <div class="form-group">
+    <label><i class="fa fa-envelope"></i> Email:</label>
     <input [(ngModel)]="user.email" name="email" type="email" required />
   </div>
 
-  <div>
-    <label>Password:</label>
+  <div class="form-group">
+    <label><i class="fa fa-lock"></i> Password:</label>
     <input [(ngModel)]="user.password" name="password" type="password" required />
   </div>
 
-  <div>
-    <label>Role:</label>
+  <div class="form-group">
+    <label><i class="fa fa-user-tag"></i> Role:</label>
     <select [(ngModel)]="user.role" name="role">
       <option value="Viewer">Viewer</option>
       <option value="Editor">Editor</option>
@@ -25,14 +25,11 @@
     </select>
   </div>
 
-  <button type="submit">Register</button>
+  <button type="submit">
+    <i class="fa fa-user-plus"></i> Register
+  </button>
+
   <p class="center-link">
-  Already have an account? <a routerLink="/login">Login</a>
-</p>
-
-
-  
-
-  
+    Already have an account? <a routerLink="/login">Login</a>
+  </p>
 </form>
-

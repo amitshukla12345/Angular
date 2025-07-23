@@ -25,6 +25,11 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       {
+        path: '', // ✅ Chart loads at /dashboard
+        loadComponent: () =>
+          import('./dashbord/chart.component').then(m => m.DashboardChartComponent)
+      },
+      {
         path: 'users',
         loadComponent: () =>
           import('./user/user.component').then(m => m.UserComponent)

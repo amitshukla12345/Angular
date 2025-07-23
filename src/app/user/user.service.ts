@@ -27,10 +27,17 @@ export class UserService {
     return this.http.delete(`${this.apiUrl}/${userId}`);
   }
 
-  // ✅ Login endpoint
-  // ✅ Correct login method
-login(email: string, password: string): Observable<any> {
+  login(email: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, { email, password });
-}
+  }
 
+  //  Add this method to get a single user by ID
+  getUserById(id: number): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/${id}`);
+  }
+
+  //  Add this method to update rating
+  updateRating(user: User): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/rate`, user);
+  }
 }

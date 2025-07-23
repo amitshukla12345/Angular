@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin-view',
@@ -20,8 +21,7 @@ import { CommonModule } from '@angular/common';
         <div class="grid-cell">{{ userRatings[id]?.email || 'N/A' }}</div>
         <div class="grid-cell">
           {{ userRatings[id]?.rating }}
-         {{ getEmoji(userRatings[id]?.rating || 0) }}
-
+          {{ getEmoji(userRatings[id]?.rating || 0) }}
         </div>
       </ng-container>
     </div>
@@ -65,9 +65,24 @@ import { CommonModule } from '@angular/common';
 export class AdminViewComponent implements OnInit {
   userRatings: Record<string, { name: string; email: string; rating: number }> = {};
 
+  constructor(private http: HttpClient) {}
+
   ngOnInit(): void {
-    const data = localStorage.getItem('ratings');
-    this.userRatings = data ? JSON.parse(data) : {};
+    this.http.get<any[]>('http://localhost:3000/user/dashboard-data').subscribe({
+      next: (data) => {
+        this.userRatings = {};
+        data.forEach((user, index) => {
+          this.userRatings[index + 1] = {
+            name: user.name,
+            email: user.email || 'unknown@example.com',
+            rating: user.rating || 0
+          };
+        });
+      },
+      error: (err) => {
+        console.error('❌ Failed to load ratings from backend:', err);
+      }
+    });
   }
 
   objectKeys(obj: any): string[] {

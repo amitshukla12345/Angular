@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-rate-us',
@@ -13,31 +14,41 @@ export class RateUsComponent implements OnInit {
   hovered = 0;
   user: any = null;
 
+  constructor(private http: HttpClient) {}
+
   ngOnInit(): void {
     const nav = history.state?.user;
     if (nav) {
       this.user = nav;
 
-      const allRatings = JSON.parse(localStorage.getItem('ratings') || '{}');
-      if (allRatings[this.user.id]) {
-        this.rating = allRatings[this.user.id]?.rating || 0;
-      }
+      // ✅ Load user from backend
+      this.http.get<any>(`http://localhost:3000/user/${this.user.id}`).subscribe({
+        next: (data) => {
+          this.rating = data?.rating || 0;
+        },
+        error: (err) => {
+          console.error('❌ Failed to load rating:', err);
+        }
+      });
     }
   }
 
   setRating(value: number) {
     this.rating = value;
 
-    const allRatings = JSON.parse(localStorage.getItem('ratings') || '{}');
-    allRatings[this.user.id] = {
-      name: this.user.name,
-      email: this.user.email,
-      role: this.user.role,
-      rating: value
-    };
-    localStorage.setItem('ratings', JSON.stringify(allRatings));
-
-    console.log(`${this.user.name} rated: ${value}`);
+    this.http.put('http://localhost:3000/user/rate', {
+  id: this.user.id,
+  rating: value
+})
+.subscribe({
+      next: () => {
+        console.log(`${this.user.name} rated: ${value}`);
+      },
+      error: (err) => {
+        console.error('❌ Rating failed:', err);
+        alert('❌ Failed to submit rating');
+      }
+    });
   }
 
   setHover(value: number) {
