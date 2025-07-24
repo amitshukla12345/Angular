@@ -33,9 +33,7 @@
 },
           "configurations": {
             "production": {
-  "serviceWorker": "true",
-  "ngswConfigPath": "ngsw-config.json",
-
+  
  
   
   "fileReplacements": [
