@@ -45,7 +45,8 @@ export class UserComponent implements OnInit {
   }
 
   showModal = false;
-  newUser: User = { name: '', email: '', role: 'Viewer' };
+  // ✅ PASSWORD FIELD ADD KIYA
+  newUser: User = { name: '', email: '', role: 'Viewer', password: '' };
   rowData: User[] = [];
 
   rowSelection: RowSelectionOptions = {
@@ -125,18 +126,25 @@ export class UserComponent implements OnInit {
   }
 
   submitUser(): void {
+    // ✅ PASSWORD VALIDATION ADD KIYA
+    if (!this.newUser.name || !this.newUser.email || !this.newUser.password) {
+      alert('❌ Name, Email, and Password are required!');
+      return;
+    }
+
     const user = { ...this.newUser };
     this.userService.addUser(user).subscribe({
       next: (createdUser) => {
         this.gridApi.applyTransaction({ add: [createdUser] });
         this.rowData.push(createdUser);
-        this.newUser = { name: '', email: '', role: 'Viewer' };
+        // ✅ PASSWORD RESET KIY
+        this.newUser = { name: '', email: '', role: 'Viewer', password: '' };
         this.showModal = false;
-        alert('User added to backend');
+        alert('✅ User added successfully!');
       },
       error: (err) => {
         console.error('Error adding user:', err);
-        alert('Failed to add user to server');
+        alert(`❌ Failed to add user: ${err.error?.message || 'Server error'}`);
       }
     });
   }
@@ -217,10 +225,8 @@ export class UserComponent implements OnInit {
   }
 
   openRateUsModal(user: User): void {
-  this.router.navigate(['/dashboard/rate-us'], {
-    state: { user: { id: user.id, name: user.name, email: user.email, role: user.role } }
-  });
-}
-
-
+    this.router.navigate(['/dashboard/rate-us'], {
+      state: { user: { id: user.id, name: user.name, email: user.email, role: user.role } }
+    });
+  }
 }

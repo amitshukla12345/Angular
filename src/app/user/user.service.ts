@@ -31,13 +31,34 @@ export class UserService {
     return this.http.post(`${this.apiUrl}/login`, { email, password });
   }
 
-  //  Add this method to get a single user by ID
+  // ✅ Get a single user by ID
   getUserById(id: number): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/${id}`);
   }
 
-  //  Add this method to update rating
-  updateRating(user: User): Observable<User> {
-    return this.http.put<User>(`${this.apiUrl}/rate`, user);
+  // ✅ FIXED: Update rating with correct data format
+  updateRating(userId: number, rating: number): Observable<User> {
+    const ratingData = {
+      id: userId,
+      rating: rating
+    };
+    
+    console.log('📤 Sending rating update:', ratingData);
+    return this.http.put<User>(`${this.apiUrl}/rate`, ratingData);
+  }
+
+  // ✅ Alternative: If you want to use partial user
+  updateUserRating(userId: number, rating: number): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/${userId}`, { rating });
+  }
+
+  // ✅ Get dashboard data for admin view
+  getDashboardData(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/dashboard-data`);
+  }
+
+  // ✅ Register new user
+  register(user: User): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/register`, user);
   }
 }

@@ -29,6 +29,16 @@
       <label>Email:</label>
       <input [(ngModel)]="newUser.email" name="email" required /><br><br>
 
+      <!-- ✅ PASSWORD INPUT ADD KIYA -->
+      <label>Password:</label>
+      <input 
+        type="password" 
+        [(ngModel)]="newUser.password" 
+        name="password" 
+        required 
+        placeholder="Enter password"
+      /><br><br>
+
       <label>Role:</label>
       <select [(ngModel)]="newUser.role" name="role">
         <option>Admin</option>
