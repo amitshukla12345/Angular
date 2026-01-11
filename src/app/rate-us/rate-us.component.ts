@@ -19,7 +19,7 @@ export class RateUsComponent implements OnInit {
     'Content-Type': 'application/json'
   });
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
     const nav = history.state?.user;
@@ -28,7 +28,7 @@ export class RateUsComponent implements OnInit {
       console.log('👤 User from history:', this.user);
 
       // ✅ Load user from backend with headers
-      this.http.get<any>(`http://localhost:3000/user/${this.user.id}`, 
+      this.http.get<any>(`http://localhost:3000/user/${this.user.id}`,
         { headers: this.headers }
       ).subscribe({
         next: (data) => {
@@ -47,7 +47,7 @@ export class RateUsComponent implements OnInit {
 
   setRating(value: number) {
     console.log('⭐ Setting rating to:', value);
-    
+
     if (!this.user?.id) {
       alert('❌ User not found!');
       return;
@@ -65,14 +65,14 @@ export class RateUsComponent implements OnInit {
     console.log('📤 Sending rating data:', ratingData);
 
     // ✅ Send with headers
-    this.http.put('http://localhost:3000/user/rate', 
+    this.http.put('http://localhost:3000/user/rate',
       ratingData,
       { headers: this.headers }
     ).subscribe({
       next: (response: any) => {
         console.log('✅ Rating successful:', response);
         console.log(`${this.user.name} rated: ${value}`);
-        
+
         // Show success message
         if (response?.success) {
           alert(`✅ ${response.message}`);
@@ -82,10 +82,10 @@ export class RateUsComponent implements OnInit {
         console.error('❌ Rating failed:', err);
         console.log('Full error:', err);
         console.log('Error response:', err.error);
-        
+
         // Revert on error
         this.rating = oldRating;
-        
+
         // Show detailed error
         let errorMsg = 'Failed to submit rating';
         if (err.error?.message) {

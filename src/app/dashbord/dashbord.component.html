@@ -9,10 +9,7 @@
 <div *ngIf="showQR" class="qr-popup">
   <div class="qr-popup-content">
     <h3>User QR</h3>
-    <img
-      [src]="'https://quickchart.io/qr?text=' + encodedName + '&size=150'"
-      alt="QR Code"
-    />
+    <img [src]="'https://quickchart.io/qr?text=' + encodedName + '&size=150'" alt="QR Code" />
     <button class="close-btn" (click)="closeQRPopup()">Close</button>
   </div>
 </div>
@@ -24,9 +21,9 @@
     <h4>📂Menu</h4>
     <ul style="list-style: none; padding: 0;">
       <li><a routerLink="/dashboard">📊 Dashboard</a></li>
-      
+
       <li><a routerLink="/dashboard/rate-us">🔔 Rate Us</a></li>
-      
+
       <li><a routerLink="/dashboard/users">👤 Users</a></li>
       <li><a routerLink="/dashboard/admin">🛡️ Admin View</a></li>
     </ul>

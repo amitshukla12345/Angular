@@ -29,7 +29,8 @@ a:hover {
   flex-grow: 1;
 }
 
-.logout-button, .user-button {
+.logout-button,
+.user-button {
   background-color: white;
   color: #007bff;
   border: none;

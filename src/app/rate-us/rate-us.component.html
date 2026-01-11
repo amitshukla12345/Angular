@@ -7,16 +7,9 @@
 
   <div class="stars" role="radiogroup" aria-label="Star Rating">
     <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
-      <span
-        role="radio"
-        [attr.aria-checked]="star === rating"
-        tabindex="0"
-        (click)="setRating(star)"
-        (mouseover)="setHover(star)"
-        (mouseleave)="clearHover()"
-        [class.filled]="star <= (hovered || rating)"
-        style="cursor: pointer;"
-        >&#9733;</span>
+      <span role="radio" [attr.aria-checked]="star === rating" tabindex="0" (click)="setRating(star)"
+        (mouseover)="setHover(star)" (mouseleave)="clearHover()" [class.filled]="star <= (hovered || rating)"
+        style="cursor: pointer;">&#9733;</span>
     </ng-container>
   </div>
 

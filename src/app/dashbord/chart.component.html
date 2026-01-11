@@ -1,8 +1,238 @@
-<div style="height: 400px;">
- 
-  <canvas baseChart
-          [data]="chartData"
-          [options]="chartOptions"
-          [type]="'bar'">
-  </canvas>
+<div class="chart-container" #chartContainer>
+  <div class="chart-header">
+    <h2 class="chart-title">
+      📊 User Ratings Dashboard
+    </h2>
+    <div class="chart-stats">
+      <div class="stat-item">
+        <span class="stat-label">Average Rating</span>
+        <span class="stat-value">{{ averageRating | number:'1.1-1' }} ⭐</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Total Users</span>
+        <span class="stat-value">{{ totalUsers }}</span>
+      </div>
+      <button (click)="refreshChart()" class="refresh-btn" [disabled]="isLoading">
+        {{ isLoading ? '🔄 Loading...' : '🔄 Refresh' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="chart-wrapper">
+    <div class="chart-background" (click)="onChartClick()">
+      <div *ngIf="isLoading" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Loading chart data...</p>
+      </div>
+
+      <div *ngIf="!isLoading && !hasChartData" class="no-data">
+        <p>📭 No ratings data available</p>
+        <p>Users need to submit ratings first</p>
+      </div>
+
+      <canvas *ngIf="hasChartData" baseChart [data]="chartData" [options]="chartOptions" [type]="'bar'">
+      </canvas>
+    </div>
+  </div>
+
+  <div class="chart-footer">
+    <div class="legend">
+      <div class="legend-item">
+        <span class="legend-color" style="background: rgba(52, 152, 219, 0.9)"></span>
+        <span class="legend-text">⭐ Rating Scale: 1-5</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color" style="background: rgba(231, 76, 60, 0.9)"></span>
+        <span class="legend-text">⚠️ Click chart to refresh if not visible</span>
+      </div>
+    </div>
+  </div>
 </div>
+
+<style>
+  .chart-container {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.08),
+      0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(226, 232, 240, 0.7);
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid rgba(226, 232, 240, 0.8);
+  }
+
+  .chart-title {
+    margin: 0;
+    color: #1a202c;
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #2c5282, #4299e1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .chart-stats {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: #718096;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-top: 4px;
+  }
+
+  .refresh-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .refresh-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .refresh-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .chart-wrapper {
+    flex: 1;
+    position: relative;
+    min-height: 300px;
+  }
+
+  .chart-background {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    height: 100%;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    cursor: pointer;
+    position: relative;
+  }
+
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    border-radius: 12px;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .no-data {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #718096;
+    text-align: center;
+  }
+
+  .no-data p:first-child {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .chart-footer {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 2px solid rgba(226, 232, 240, 0.8);
+  }
+
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .legend-text {
+    font-size: 0.9rem;
+    color: #4a5568;
+    font-weight: 500;
+  }
+</style>
